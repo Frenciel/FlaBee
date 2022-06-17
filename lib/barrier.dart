@@ -24,7 +24,7 @@ class MyBarrier extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         width: MediaQuery.of(context).size.width * barrierWidth / 2,
-        height: MediaQuery.of(context).size.height * 3 / 4 * barrierHeight / 2,
+        height: MediaQuery.of(context).size.height * barrierHeight * 3 / 4,
       ),
     );
   }

@@ -6,8 +6,14 @@ import 'package:flutter_application_1/bee.dart';
 
 // to do
 // 1. fix barrier hit bug
+
 // 2. add sound / music
+//    api tried: soundpool, audioplayer, audiocache
+//    Error: To set up CocoaPods for ARM macOS, run: arch -x86_64 sudo gem install ffi
+//    already installed using brew
+
 // 3. add different height of barrier
+//     done!
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   double height = 0;
   double time = 0;
   double gravity = -0.045; // how strong the gravity is
-  double velocity = 0.35; // how strong the jump is
+  double velocity = 0.32; // how strong the jump is
   double beeWidth = 0.1;
   double beeHeight = 0.1;
 
@@ -33,16 +39,49 @@ class _HomePageState extends State<HomePage> {
   int highscore = 0;
 
   // barrier variables
-  static List<double> barrierX = [2, 2 + 1.5];
+  double moveSpeed = 0.005;
+  static List<double> barrierX = [1.5, 3.0, 4.5, 6.0, 7.5];
   static double barrierWidth = 0.5; // out of 2
   List<List<double>> barrierHeight = [
     // out of 2 (entire height of screen)
     // [topHeight, bottomHeight]
-    [0.6, 0.4],
-    [0.4, 0.6],
-    // [0.2, 0.8],
-    // [0.8, 0.2],
+    [0.3, 0.2],
+    [0.2, 0.4],
+    [0.5, 0.1],
+    [0.4, 0.3],
+    [0.2, 0.4],
   ];
+
+  void initGame() {
+    setState(() {
+      // bee variables
+      beeY = 0;
+      initialPos = beeY;
+      height = 0;
+      time = 0;
+      gravity = -0.045; // how strong the gravity is
+      velocity = 0.35; // how strong the jump is
+      beeWidth = 0.1;
+      beeHeight = 0.1;
+
+      // game settings
+      gameHasStarted = false;
+      score = 0;
+
+      // barrier variables
+      barrierX = [1.5, 3.0, 4.5, 6.0, 7.5];
+      barrierWidth = 0.5; // out of 2
+      barrierHeight = [
+        // out of 2 (entire height of screen)
+        // [topHeight, bottomHeight]
+        [0.3, 0.2],
+        [0.2, 0.4],
+        [0.5, 0.1],
+        [0.4, 0.3],
+        [0.2, 0.4],
+      ];
+    });
+  }
 
   void startGame() {
     gameHasStarted = true;
@@ -56,14 +95,14 @@ class _HomePageState extends State<HomePage> {
         beeY = initialPos - height;
       });
 
+      // move map (barriers)
+      moveMap();
+
       // check if bee is dead
       if (beeIsDead()) {
         timer.cancel();
         _showDialog();
       }
-
-      // move map (barriers)
-      moveMap();
 
       // keep the time going
       time += 0.05;
@@ -71,17 +110,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   void moveMap() {
+    if (score == 10 || score == 20 || score == 30) {
+      moveSpeed += 0.0025;
+    }
     for (int i = 0; i < barrierX.length; i++) {
       // move barriers
       setState(() {
-        barrierX[i] -= 0.005;
+        barrierX[i] -= moveSpeed;
       });
 
       // if barrier exit map, loop
       if (barrierX[i] < -1.5) {
         score += 1;
-        // 2 for 2 types of barrier and 1.5 for if check above
-        barrierX[i] += 2 * 1.5;
+        // 5 for 5 types of barrier and 2.0 for if check above
+        barrierX[i] += 5 * 1.5;
       }
     }
   }
@@ -98,19 +140,9 @@ class _HomePageState extends State<HomePage> {
       if (score > highscore) {
         highscore = score;
       }
-      score = 0;
-      beeY = 0;
-      gameHasStarted = false;
-      time = 0;
-      initialPos = beeY;
-      barrierX = [2, 2 + 1.5];
-      barrierHeight = [
-        [0.6, 0.4],
-        [0.4, 0.6],
-        // [0.2, 0.8],
-        // [0.8, 0.2],
-      ];
     });
+
+    initGame();
   }
 
   void _showDialog() {
@@ -220,37 +252,53 @@ class _HomePageState extends State<HomePage> {
                       isThisBottomBarrier: true,
                     ),
 
-                    // // Top barrier 2
-                    // MyBarrier(
-                    //   barrierX: barrierX[2],
-                    //   barrierHeight: barrierHeight[2][0],
-                    //   barrierWidth: barrierWidth,
-                    //   isThisBottomBarrier: false,
-                    // ),
+                    // Top barrier 2
+                    MyBarrier(
+                      barrierX: barrierX[2],
+                      barrierHeight: barrierHeight[2][0],
+                      barrierWidth: barrierWidth,
+                      isThisBottomBarrier: false,
+                    ),
 
-                    // // Bottom barrier 2
-                    // MyBarrier(
-                    //   barrierX: barrierX[2],
-                    //   barrierHeight: barrierHeight[2][1],
-                    //   barrierWidth: barrierWidth,
-                    //   isThisBottomBarrier: true,
-                    // ),
+                    // Bottom barrier 2
+                    MyBarrier(
+                      barrierX: barrierX[2],
+                      barrierHeight: barrierHeight[2][1],
+                      barrierWidth: barrierWidth,
+                      isThisBottomBarrier: true,
+                    ),
 
-                    // // Top barrier 3
-                    // MyBarrier(
-                    //   barrierX: barrierX[3],
-                    //   barrierHeight: barrierHeight[3][0],
-                    //   barrierWidth: barrierWidth,
-                    //   isThisBottomBarrier: false,
-                    // ),
+                    // Top barrier 3
+                    MyBarrier(
+                      barrierX: barrierX[3],
+                      barrierHeight: barrierHeight[3][0],
+                      barrierWidth: barrierWidth,
+                      isThisBottomBarrier: false,
+                    ),
 
-                    // // Bottom barrier 3
-                    // MyBarrier(
-                    //   barrierX: barrierX[3],
-                    //   barrierHeight: barrierHeight[3][1],
-                    //   barrierWidth: barrierWidth,
-                    //   isThisBottomBarrier: true,
-                    // ),
+                    // Bottom barrier 3
+                    MyBarrier(
+                      barrierX: barrierX[3],
+                      barrierHeight: barrierHeight[3][1],
+                      barrierWidth: barrierWidth,
+                      isThisBottomBarrier: true,
+                    ),
+
+                    // Top barrier 4
+                    MyBarrier(
+                      barrierX: barrierX[4],
+                      barrierHeight: barrierHeight[4][0],
+                      barrierWidth: barrierWidth,
+                      isThisBottomBarrier: false,
+                    ),
+
+                    // Bottom barrier 4
+                    MyBarrier(
+                      barrierX: barrierX[4],
+                      barrierHeight: barrierHeight[4][1],
+                      barrierWidth: barrierWidth,
+                      isThisBottomBarrier: true,
+                    ),
 
                     Container(
                       alignment: Alignment(0, -0.5),
