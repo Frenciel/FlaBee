@@ -6,6 +6,7 @@ import 'package:flutter_application_1/bee.dart';
 
 // to do
 // 1. fix barrier hit bug
+//    done
 
 // 2. add sound / music
 //    api tried: soundpool, audioplayer, audiocache
@@ -30,8 +31,8 @@ class _HomePageState extends State<HomePage> {
   double time = 0;
   double gravity = -0.045; // how strong the gravity is
   double velocity = 0.32; // how strong the jump is
-  double beeWidth = 0.1;
-  double beeHeight = 0.1;
+  double beeWidth = 0.1; // out of 2 (2 is the phone size)
+  double beeHeight = 0.1; // out of 2
 
   // game settings
   bool gameHasStarted = false;
@@ -45,11 +46,11 @@ class _HomePageState extends State<HomePage> {
   List<List<double>> barrierHeight = [
     // out of 2 (entire height of screen)
     // [topHeight, bottomHeight]
-    [0.3, 0.2],
-    [0.2, 0.4],
-    [0.5, 0.1],
-    [0.4, 0.3],
-    [0.2, 0.4],
+    [0.6, 0.4],
+    [0.4, 0.6],
+    [0.5, 0.2],
+    [0.2, 0.8],
+    [0.7, 0.4],
   ];
 
   void initGame() {
@@ -69,16 +70,17 @@ class _HomePageState extends State<HomePage> {
       score = 0;
 
       // barrier variables
+      moveSpeed = 0.005;
       barrierX = [1.5, 3.0, 4.5, 6.0, 7.5];
       barrierWidth = 0.5; // out of 2
       barrierHeight = [
         // out of 2 (entire height of screen)
         // [topHeight, bottomHeight]
-        [0.3, 0.2],
-        [0.2, 0.4],
-        [0.5, 0.1],
-        [0.4, 0.3],
-        [0.2, 0.4],
+        [0.6, 0.4],
+        [0.4, 0.6],
+        [0.5, 0.2],
+        [0.2, 0.8],
+        [0.7, 0.4],
       ];
     });
   }
@@ -95,14 +97,14 @@ class _HomePageState extends State<HomePage> {
         beeY = initialPos - height;
       });
 
-      // move map (barriers)
-      moveMap();
-
       // check if bee is dead
       if (beeIsDead()) {
         timer.cancel();
         _showDialog();
       }
+
+      // move map (barriers)
+      moveMap();
 
       // keep the time going
       time += 0.05;
@@ -111,7 +113,9 @@ class _HomePageState extends State<HomePage> {
 
   void moveMap() {
     if (score == 10 || score == 20 || score == 30) {
-      moveSpeed += 0.0025;
+      setState(() {
+        moveSpeed += 0.000005;
+      });
     }
     for (int i = 0; i < barrierX.length; i++) {
       // move barriers
@@ -182,16 +186,20 @@ class _HomePageState extends State<HomePage> {
 
   bool beeIsDead() {
     // check if bee hits top or bottom of screen
-    if (beeY < -1 || beeY > 1) {
+    if (beeY <= -1 || beeY + beeHeight >= 1) {
       return true;
     }
 
     // if bee hits barrier
     // check if bee is within x and y coordinates of barrier
     for (int i = 0; i < barrierX.length; i++) {
+      // check x
       if (barrierX[i] <= beeWidth &&
-          barrierX[i] + beeWidth >= -beeWidth &&
+          barrierX[i] + (barrierWidth) >= -beeWidth &&
+          // check y
+          // top barrier
           (beeY <= -1 + barrierHeight[i][0] ||
+              // bottom barrier
               beeY + beeHeight >= 1 - barrierHeight[i][1])) {
         return true;
       }
