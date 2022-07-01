@@ -29,8 +29,8 @@ class _HomePageState extends State<HomePage> {
   double initialPos = beeY;
   double height = 0;
   double time = 0;
-  double gravity = -0.045; // how strong the gravity is
-  double velocity = 0.32; // how strong the jump is
+  double gravity = -0.029; // how strong the gravity is
+  double velocity = 0.20; // how strong the jump is
   double beeWidth = 0.1; // out of 2 (2 is the phone size)
   double beeHeight = 0.1; // out of 2
 
@@ -46,11 +46,11 @@ class _HomePageState extends State<HomePage> {
   List<List<double>> barrierHeight = [
     // out of 2 (entire height of screen)
     // [topHeight, bottomHeight]
-    [0.6, 0.4],
-    [0.4, 0.6],
-    [0.5, 0.2],
-    [0.2, 0.8],
-    [0.7, 0.4],
+    [0.7, 0.5],
+    [0.4, 0.8],
+    [0.8, 0.4],
+    [0.6, 0.5],
+    [0.3, 0.9],
   ];
 
   void initGame() {
@@ -60,8 +60,8 @@ class _HomePageState extends State<HomePage> {
       initialPos = beeY;
       height = 0;
       time = 0;
-      gravity = -0.045; // how strong the gravity is
-      velocity = 0.35; // how strong the jump is
+      gravity = -0.029; // how strong the gravity is
+      velocity = 0.20; // how strong the jump is
       beeWidth = 0.1;
       beeHeight = 0.1;
 
@@ -76,11 +76,11 @@ class _HomePageState extends State<HomePage> {
       barrierHeight = [
         // out of 2 (entire height of screen)
         // [topHeight, bottomHeight]
-        [0.6, 0.4],
-        [0.4, 0.6],
-        [0.5, 0.2],
-        [0.2, 0.8],
-        [0.7, 0.4],
+        [0.7, 0.5],
+        [0.4, 0.8],
+        [0.8, 0.4],
+        [0.6, 0.5],
+        [0.3, 0.9],
       ];
     });
   }
